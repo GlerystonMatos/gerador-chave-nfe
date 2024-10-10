@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <Title>GeradorChaveNFe</Title>
+    <Company>GM</Company>
+    <Authors>Gleryston Matos</Authors>
+    <Description>Gerador de chaves validas de NF-e para realização de teste</Description>
+    <Copyright>Gleryston Matos</Copyright>
+    <PackageProjectUrl>https://github.com/GlerystonMatos/gerador-chave-nfe</PackageProjectUrl>
+    <PackageIcon>GM.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/GlerystonMatos/gerador-chave-nfe</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\GM.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TextToAsciiArt" Version="1.0.14.15" />
+  </ItemGroup>
+
+</Project>
