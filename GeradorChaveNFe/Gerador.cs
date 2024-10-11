@@ -25,6 +25,29 @@ namespace GeradorChaveNFe
             Carregando();
         }
 
+        public static void Adeus()
+        {
+            IArtWriter writer = new ArtWriter();
+
+            ArtSetting settings = new ArtSetting();
+            settings.Text = "|";
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+
+            Console.Clear();
+            Console.WriteLine("------------------------------------------------------------------------------------\n");
+            writer.WriteConsole("GERADOR", settings);
+            Console.WriteLine("");
+            writer.WriteConsole("CHAVE NFE", settings);
+            Console.WriteLine("\n-----------------------------------------------------------------------------------");
+
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("                                                               BY GLERYSTON MATOS    ");
+            Console.WriteLine("ATÉ A PRÓXIMA ");
+
+            Console.ResetColor();
+        }
+
         public static void Carregando()
         {
             Console.ResetColor();
@@ -95,7 +118,7 @@ namespace GeradorChaveNFe
             {
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine("Código da UF inválido. Por favor, selecione um código válido:");
+                Console.WriteLine("Código da UF inválido. Por favor, selecione um código da UF válido:");
 
                 Console.ForegroundColor = ConsoleColor.Yellow;
 
@@ -120,7 +143,21 @@ namespace GeradorChaveNFe
             Console.ResetColor();
 
             Console.Write("YYMM:");
-            return Console.ReadLine();
+            string anoMes = Console.ReadLine();
+
+            while (anoMes.Trim().Length < 4)
+            {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine("Ano e Mês de Emissão (formato YYMM) inválido. Por favor, informe um Ano e Mês de Emissão válido:");
+
+                Console.ResetColor();
+
+                Console.Write("YYMM:");
+                anoMes = Console.ReadLine();
+            }
+
+            return anoMes;
         }
 
         public static string ObterCNPJ()
@@ -132,7 +169,21 @@ namespace GeradorChaveNFe
             Console.ResetColor();
 
             Console.Write("CNPJ:");
-            return Console.ReadLine();
+            string cnpj = Console.ReadLine();
+
+            while (cnpj.Trim().Length < 14)
+            {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine("CNPJ do Emitente (14 dígitos) inválido. Por favor, informe um CNPJ do Emitente válido:");
+
+                Console.ResetColor();
+
+                Console.Write("CNPJ:");
+                cnpj = Console.ReadLine();
+            }
+
+            return cnpj;
         }
 
         public static string ObterSerie()
@@ -144,7 +195,21 @@ namespace GeradorChaveNFe
             Console.ResetColor();
 
             Console.Write("Série:");
-            return Console.ReadLine();
+            string serie = Console.ReadLine();
+
+            while (serie.Trim().Length < 3)
+            {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine("Série da NFe (ex.: 001) inválida. Por favor, informe uma Série da NFe válida:");
+
+                Console.ResetColor();
+
+                Console.Write("Série:");
+                serie = Console.ReadLine();
+            }
+
+            return serie;
         }
 
         public static string ObterTipoEmissao()
@@ -173,7 +238,7 @@ namespace GeradorChaveNFe
             {
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine("Código do tipo de emissão inválido. Por favor, selecione um código válido:");
+                Console.WriteLine("Tipo de Emissão inválido. Por favor, selecione um Tipo de Emissão válido:");
 
                 Console.ForegroundColor = ConsoleColor.Yellow;
 

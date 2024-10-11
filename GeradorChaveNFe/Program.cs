@@ -7,6 +7,7 @@
             Gerador.Introducao();
             Iniciar();
             Continuar();
+            Gerador.Adeus();
         }
 
         public static void Iniciar()
@@ -27,7 +28,7 @@
                 string numeroNFe = numeroAtualNFe.ToString("D9");
                 string codigoNumerico = new Random().Next(1, 99999999).ToString("D8");
 
-                string chaveSemDV = uf + anoMesEmissao + cnpj + modeloNotaFiscalEletrônica + serie + numeroNFe + codigoNumerico + tipoEmissao;
+                string chaveSemDV = uf + anoMesEmissao + cnpj + modeloNotaFiscalEletrônica + serie + numeroNFe + tipoEmissao + codigoNumerico;
                 int dv = Gerador.CalcularDigitoVerificador(chaveSemDV);
 
                 string chaveAcesso = chaveSemDV + dv;
