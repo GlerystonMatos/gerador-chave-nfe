@@ -2,72 +2,47 @@
 {
     public class Program
     {
+        private static string _versao = "1.0.2.0";
+        private static ChaveNFe _chaveNFe = new ChaveNFe();
+        private static ChaveNFe _dadosChaveNFeSalvos = new ChaveNFe();
+
         public static void Main(string[] args)
         {
-            Gerador.Introducao();
+            Utils.Introducao(_versao);
             Iniciar();
-            Continuar();
-            Gerador.Adeus();
+            Utils.Adeus(_versao);
         }
 
-        public static void Iniciar()
+        private static void Iniciar()
         {
-            string uf = Gerador.ObterUF();
-            string anoMesEmissao = Gerador.ObterAnoMesEmissao();
-            string cnpj = Gerador.ObterCNPJ();
-            string modeloNotaFiscalEletrônica = "55";
-            string serie = Gerador.ObterSerie();
-            string tipoEmissao = Gerador.ObterTipoEmissao();
-            int numeroInicialNFe = Gerador.ObterNumeroInicialNFe();
-            int numeroFinalNFe = Gerador.ObterNumeroFinalNFe(numeroInicialNFe);
+            Utils.Topo(_versao, _chaveNFe);
+            Console.WriteLine("\nInformações para geração das chaves\n");
+            SelecionarInformacoes();
 
-            IList<string> chavesGeradas = new List<string>();
-
-            for (int numeroAtualNFe = numeroInicialNFe; numeroAtualNFe <= numeroFinalNFe; numeroAtualNFe++)
+            Utils.Topo(_versao, _chaveNFe);
+            while (!Utils.Confirmacao($"\nConfirmar a geração das chaves das NFe com as informações selecionadas?", ConsoleColor.Green).Equals("S"))
             {
-                string numeroNFe = numeroAtualNFe.ToString("D9");
-                string codigoNumerico = new Random().Next(1, 99999999).ToString("D8");
-
-                string chaveSemDV = uf + anoMesEmissao + cnpj + modeloNotaFiscalEletrônica + serie + numeroNFe + tipoEmissao + codigoNumerico;
-                int dv = Gerador.CalcularDigitoVerificador(chaveSemDV);
-
-                string chaveAcesso = chaveSemDV + dv;
-                chavesGeradas.Add(chaveAcesso);
+                SelecionarInformacoes();
+                Utils.Topo(_versao, _chaveNFe);
             }
 
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("\nChaves de Acesso Geradas:");
+            GeradorChave.Gerar(_versao, _chaveNFe);
+            IniManager.SalvarConfiguracao(_chaveNFe);
 
-            foreach (var chave in chavesGeradas)
-                Console.WriteLine(chave);
-
-            Console.ResetColor();
-        }
-
-        public static void Continuar()
-        {
-            Console.WriteLine("");
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("Deseja gerar mais NFe?");
-
-            Console.ResetColor();
-
-            Console.Write("(Y/N):");
-            string opcao = Console.ReadLine();
-
-            while (opcao.ToUpper().Equals("Y"))
-            {
+            if (Utils.Confirmacao("\nDeseja gerar mais chaves de NFe?", ConsoleColor.Green).Equals("S"))
                 Iniciar();
+        }
 
-                Console.WriteLine("");
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine("Deseja gerar mais NFe?");
-
-                Console.ResetColor();
-
-                Console.Write("(Y/N):");
-                opcao = Console.ReadLine();
-            }
+        private static void SelecionarInformacoes()
+        {
+            _dadosChaveNFeSalvos = IniManager.LerConfiguracao();
+            _chaveNFe.Uf = GeradorChave.SelecionarUf(_versao, _chaveNFe, _dadosChaveNFeSalvos);
+            _chaveNFe.AnoMes = GeradorChave.SelecionarAnoMes(_versao, _chaveNFe, _dadosChaveNFeSalvos);
+            _chaveNFe.Cnpj = GeradorChave.SelecionarCnpj(_versao, _chaveNFe, _dadosChaveNFeSalvos);
+            _chaveNFe.Serie = GeradorChave.SelecionarSerie(_versao, _chaveNFe, _dadosChaveNFeSalvos);
+            _chaveNFe.TipoEmissao = GeradorChave.SelecionarTipoEmissao(_versao, _chaveNFe, _dadosChaveNFeSalvos);
+            _chaveNFe.NumeroInicial = GeradorChave.SelecionarNumeroInicial(_versao, _chaveNFe, _dadosChaveNFeSalvos);
+            _chaveNFe.NumeroFinal = GeradorChave.SelecionarNumeroFinal(_versao, _chaveNFe, _dadosChaveNFeSalvos);
         }
     }
 }
