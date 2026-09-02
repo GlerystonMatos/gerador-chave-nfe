@@ -402,3 +402,6 @@ Coverage/*
 
 # Variáveis de ambiente
 *.env
+
+# Parâmetros da última geração, criados em runtime ao lado do executável
+GeradorChaveNFe.ini

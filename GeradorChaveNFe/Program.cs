@@ -1,48 +1,80 @@
-﻿namespace GeradorChaveNFe
+using GeradorChaveNFe.Apresentacao;
+using GeradorChaveNFe.Dominio;
+using GeradorChaveNFe.Geracao;
+using GeradorChaveNFe.Persistencia;
+using System.Text;
+
+namespace GeradorChaveNFe;
+
+public static class Program
 {
-    public class Program
+    private const string Versao = "2.0.0.0";
+
+    public static void Main()
     {
-        private static string _versao = "1.0.2.0";
-        private static ChaveNFe _chaveNFe = new ChaveNFe();
-        private static ChaveNFe _dadosChaveNFeSalvos = new ChaveNFe();
+        Console.OutputEncoding = Encoding.UTF8;
 
-        public static void Main(string[] args)
+        Tela.BemVindo(Versao);
+        Tela.Carregando();
+
+        GerarChavesEnquantoUsuarioQuiser();
+
+        Tela.Despedida(Versao);
+    }
+
+    private static void GerarChavesEnquantoUsuarioQuiser()
+    {
+        AssistenteParametros assistente = new(Versao);
+        bool continuar = true;
+
+        while (continuar)
         {
-            Utils.Introducao(_versao);
-            Iniciar();
-            Utils.Adeus(_versao);
+            ParametrosChaveNfe parametros = ColetarParametrosConfirmados(assistente);
+
+            IReadOnlyList<string> chaves = GeradorDeChaves.Gerar(parametros);
+            ExibirChaves(parametros, chaves);
+            SalvarParametros(parametros);
+
+            continuar = Prompt.Confirmar("\n Deseja gerar mais chaves de NF-e?");
         }
+    }
 
-        private static void Iniciar()
+    private static ParametrosChaveNfe ColetarParametrosConfirmados(AssistenteParametros assistente)
+    {
+        while (true)
         {
-            Utils.Topo(_versao, _chaveNFe);
-            Console.WriteLine("\nInformações para geração das chaves\n");
-            SelecionarInformacoes();
+            ParametrosChaveNfe parametros = new();
+            ParametrosChaveNfe? salvos = ArquivoParametrosIni.Ler();
 
-            Utils.Topo(_versao, _chaveNFe);
-            while (!Utils.Confirmacao($"\nConfirmar a geração das chaves das NFe com as informações selecionadas?", ConsoleColor.Green).Equals("S"))
-            {
-                SelecionarInformacoes();
-                Utils.Topo(_versao, _chaveNFe);
-            }
+            Tela.Cabecalho(Versao, parametros);
+            Paleta.EscreverLinha("\n Informe os parâmetros para a geração das chaves.", Paleta.Neutro);
 
-            GeradorChave.Gerar(_versao, _chaveNFe);
-            IniManager.SalvarConfiguracao(_chaveNFe);
+            assistente.Coletar(parametros, salvos);
 
-            if (Utils.Confirmacao("\nDeseja gerar mais chaves de NFe?", ConsoleColor.Green).Equals("S"))
-                Iniciar();
+            Tela.Cabecalho(Versao, parametros);
+            if (Prompt.Confirmar("\n Confirmar a geração das chaves com os parâmetros acima?", padraoSim: true))
+                return parametros;
         }
+    }
 
-        private static void SelecionarInformacoes()
+    private static void ExibirChaves(ParametrosChaveNfe parametros, IReadOnlyList<string> chaves)
+    {
+        Tela.Cabecalho(Versao, parametros);
+        Paleta.EscreverLinha($"\n {chaves.Count} chave(s) gerada(s):\n", Paleta.Sucesso);
+
+        foreach (string chave in chaves)
+            Paleta.EscreverLinha($"  {chave}", Paleta.Neutro);
+    }
+
+    private static void SalvarParametros(ParametrosChaveNfe parametros)
+    {
+        try
         {
-            _dadosChaveNFeSalvos = IniManager.LerConfiguracao();
-            _chaveNFe.Uf = GeradorChave.SelecionarUf(_versao, _chaveNFe, _dadosChaveNFeSalvos);
-            _chaveNFe.AnoMes = GeradorChave.SelecionarAnoMes(_versao, _chaveNFe, _dadosChaveNFeSalvos);
-            _chaveNFe.Cnpj = GeradorChave.SelecionarCnpj(_versao, _chaveNFe, _dadosChaveNFeSalvos);
-            _chaveNFe.Serie = GeradorChave.SelecionarSerie(_versao, _chaveNFe, _dadosChaveNFeSalvos);
-            _chaveNFe.TipoEmissao = GeradorChave.SelecionarTipoEmissao(_versao, _chaveNFe, _dadosChaveNFeSalvos);
-            _chaveNFe.NumeroInicial = GeradorChave.SelecionarNumeroInicial(_versao, _chaveNFe, _dadosChaveNFeSalvos);
-            _chaveNFe.NumeroFinal = GeradorChave.SelecionarNumeroFinal(_versao, _chaveNFe, _dadosChaveNFeSalvos);
+            ArquivoParametrosIni.Salvar(parametros);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Paleta.EscreverLinha("\n Não foi possível salvar os parâmetros para a próxima execução.", Paleta.Erro);
         }
     }
 }
